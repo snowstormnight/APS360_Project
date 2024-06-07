@@ -1,0 +1,219 @@
+\documentclass{article} % For LaTeX2e
+\usepackage{iclr2022_conference,times}
+% Optional math commands from https://github.com/goodfeli/dlbook_notation.
+\input{math_commands.tex}
+
+%######## APS360: Uncomment your submission name
+\newcommand{\apsname}{Project Proposal}
+%\newcommand{\apsname}{Progress Report}
+%\newcommand{\apsname}{Final Report}
+
+%######## APS360: Put your Group Number here
+\newcommand{\gpnumber}{8}
+
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{tabulary}
+\usepackage{float}
+\usepackage{longtable}
+
+
+%######## APS360: Put your project Title here
+\title{Inertial-Only Navigation System for \\Unmanned Aerial Vehicles}
+
+
+%######## APS360: Put your names, student IDs and Emails here
+\author{Yifan Lin  \\
+Student\# 1009867128\\
+\texttt{i.lin@mail.utoronto.ca} \\
+\And
+Dingsheng Liu  \\
+Student\# 1009891128 \\
+\texttt{jackds.liu@mail.utoronto.ca\,} \\
+\AND
+Xuanhao Lu  \\
+Student\# 1009883360 \\
+\texttt{georgexlu.lu@mail.utoronto.ca} \\
+\And
+Shengwen Zhao \\
+Student\# 1009796687 \\
+\texttt{jm.zhao@mail.utoronto.ca\qquad} \\
+\AND
+}
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to \LaTeX{} to determine where to break
+% the lines. Using \AND forces a linebreak at that point. So, if \LaTeX{}
+% puts 3 of 4 authors names on the first line, and the last on the second
+% line, try using \AND instead of \And before the third author name.
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+\iclrfinalcopy 
+%######## APS360: Document starts here
+\begin{document}
+
+\maketitle
+
+
+
+\section{Introduction}
+
+The rapid advancement of drone technology has created exciting opportunities across various fields, from aerial photography to disaster management. However, a challenge remains: accurately predicting a drone's position in real-time, especially in complex environments. Traditional methods like visual-inertial odometry (VIO) rely heavily on visual data, which can be unreliable in low-light conditions or when obstacles obstruct the view. Moreover, this approach requires high computational power, which is difficult to achieve under edge conditions on a drone. These challenges have inspired our project to seek out innovative solutions for more robust and precise drone localization.
+
+Our project aims to develop a system that leverages deep learning, specifically Long Short-Term Memory (LSTM) models, to predict a drone's position using data from inertial measurement units (IMUs). This approach is both interesting and significant because it allows drones to operate independently of external visual cues, enhancing their reliability and versatility. This capability is especially important in scenarios where traditional navigation aids might fail, such as in dark or cluttered environments. Additionally, this approach decreases the computational power required and requires less hardware, making drones more accessible to those interested in such areas.
+
+Deep learning is a powerful tool for this task due to its ability to process large amounts of sequential data and uncover complex patterns. LSTM models, a type of recurrent neural network (RNN), are particularly well-suited for time-series prediction, making them ideal for handling the continuous data streams from IMUs. By learning long-term dependencies in this data, LSTMs can provide more accurate and reliable position predictions.
+
+In summary, our project aims to explore further in depth, the field of drone navigation by utilizing the strengths of deep learning. By overcoming the limitations of existing methods, we hope to create a more robust and accurate system for drone localization, contributing to the broader advancement of autonomous navigation technologies.
+
+
+
+\section{Illustration/Figure}
+
+
+\begin{figure}[H]
+  \begin{center}
+  \includegraphics[width=\textwidth]{Figs/ill.png}
+  \end{center}
+\end{figure}
+
+\section{Background \& Related Work}
+Currently, the most common conventional method for predicting a drone's position is VIO, which focuses on two different approaches: filtering methods and fixed-lag smoothing methods.
+\begin{itemize}
+  \item \textbf{Filtering Method}: This method combines inputs from both the camera and the IMU to predict the position. It simplifies the processing by using camera data primarily for feature detection rather than for complete prediction, thereby increasing efficiency \citep{4209642}.
+  \item \textbf{Fixed-Lag Smoothing Methods}: This method utilizes data from every previous frame, integrating it into the calculation of the current system’s position before discarding the data. This ensures both accuracy and low computational overhead \citep{Leutenegger2013KeyframeBasedVS}.
+\end{itemize}
+
+However, due to the superior performance of IMUs in position prediction during complicated situations, scholars have begun to explore their integration with deep learning (DL). Innovations such as IONet, TLIO, and IMU Gyroscope Denoising with DL have paved the way for applying DL in this field.
+\begin{itemize}
+  \item \textbf{IONet}: The system segments IMU data into smaller parts to decrease the error accumulated over time and shifts position prediction from traditional integration to feeding the input into an RNN, transforming it into a sequential learning problem \citep{10.5555/3504035.3504827}.
+  \item \textbf{TLIO}: This system introduces a novel approach by first processing the input data through a convolutional neural network (CNN) while maintaining the uncertainty of the calculation to ensure robustness in predictions. A method involving random perturbations is used to prevent the CNN from becoming idle when the data is straightforward. The processed data is then fed into an Extended Kalman Filter (EKF) to complete the prediction \citep{TLIO}.
+  \item \textbf{IMU Gyroscopes with DL}: The system utilizes a CNN to denoise data from the IMU, which decreases the potential errors accumulated over time, thus enhancing the precision of orientation estimation critical for autonomous navigation. Additionally, the network architecture effectively uses dilated convolutions, enabling it to capture temporal relationships over extended periods without significantly increasing computational complexity \citep{brossard2020denoising}.
+\end{itemize}
+
+\section{Data Processing}
+\subsection{Source of Data}
+For consumer-grade IMUs, their noise profile can vary significantly between units, even if they share the same design. To our knowledge, there is no sufficiently large publicly available dataset for any particular IMU. Therefore, all the data used for training and validating the model will be collected by us. While this implies that the model needs re-training for each individual IMU, if we can streamline the data collection and training procedures, re-training the model for a new IMU should not be time-consuming.
+
+\subsection{Data Collection}
+
+\subsubsection{Platform}
+
+To collect the data, we will fly a lightweight 5-inch quadrotor in a 10 by 10 meter motion capture room at the University of Toronto Institute for Aerospace Studies (UTIAS). The flight will be performed autonomously using an existing and proven reliable autopilot system to avoid loss of control at high speed in a confined environment. We have obtained full permission to access all the related facilities and equipment mentioned in this proposal.
+
+The motion capture room is equipped with 16 OptiTrack cameras along the edges. They can track the five reflective markers on the drone to determine its ground truth position and altitude at 120 Hz. This information will be collected and treated as our ground-truth label, while also being sent to the drone in real time to provide localization for the autopilot system.
+
+The drone will be using a Betaflight-based low-level flight controller and powertrain capable of generating 40 N of thrust. It will also carry an Nvidia Jetson Orin NX onboard computer that provides computing power for the autopilot systems and records the onboard IMU readings. The autopilot will be able to follow trajectories through a number of waypoints at varying speeds generated by the Time-Optimal Gate-Traversing (TOGT) Planner \citep{ICRA2024CQ}. It employs an Extended Kalman Filter (EKF) to fuse IMU readings and poses provided by the OptiTrack system for localization, as well as a Model Predictive Controller (MPC). The system will be communicating using the Robot Operating System (ROS) \citep{Quigley09}. Close to the IMU, there will also be a temperature sensor. The IMU readings, temperature, and OptiTrack pose measurements will be recorded on the Jetson computer in the form of rosbag files. Both types of data will be timestamped at the time of collection.
+
+Our IMU of interest will be mounted on the drone. It is a Bosch BMI270, capable of measuring linear acceleration up to 16 G and angular velocity up to 2000 degrees per second. The sensor's native readout rate is 3.2 kHz, but due to limitations in data transfer and inference time of the model, we will only be recording the data at 400 Hz.
+
+\subsubsection{Procedure}
+
+We intend to execute a minimum of three flight trajectories: circular with a 3 m radius, Split-S, and sweep through the entire field; each at the speed limit of 1 m/s, 3 m/s, and no speed limit. The test session will be run twice - once at noon and once in the evening for different temperatures. These should enable us to cover a wide variety of working conditions for the IMU.
+
+For each flight path, first, the position of the waypoints and their order will be fed into the TOGT planner to generate a trajectory in the form of a Comma-Separated Values (CSV) file. Then, the file will be loaded into the Agilicious flight stack onboard the drone \citep{Foehn_2022}. After that, the rosbag recording for IMU readings, temperature, and ground truth pose will be started. Finally, the command to start the flight will be sent and the rosbag file will be saved after each flight.
+
+\subsubsection{Processing}
+
+After obtaining the rosbag file, the portion of the recording before takeoff and after landing will be trimmed out. The IMU data will be parsed and converted to a CSV file in the format of \([t, a_x, a_y, a_z, \omega_x, \omega_y, \omega_z]\). The pose data will then be parsed in terms of translation and rotation represented by quaternions \([t, x, y, z, \varepsilon_x, \varepsilon_y, \varepsilon_z, \eta]\). The same applies for the temperature. The pose data along with temperature will be linearly interpolated according to the timestamp of IMU data and finally merged with IMU data. The final CSV file will have the following format:
+\begin{equation}
+  [t, a_x, a_y, a_z, \omega_x, \omega_y, \omega_z, x, y, z, \varepsilon_x, \varepsilon_y, \varepsilon_z, \eta, \mathrm{temp}]
+\end{equation}
+which should be easily accessible by a PyTorch dataloader.
+
+
+
+\section{Architecture}
+
+For this project of drone localization and position adjustment based on IMU data and ground-truth position obtained from the motion-capture system as mentioned in the previous sections, we will utilize the multivariate LSTM. This specialized RNN is selected due to its ability to capture long and short term dependencies in sequential positional data from IMU accelerometers and gyroscopes \citep{zh_d2l_lstm}.
+
+
+A rough template of the architecture is depicted below: As multivariate LSTM is implemented, the input layer will be a pytorch tensor consisting of the data obtained from IMU accelerometers, gyroscopes, thermometer, and theoretical position and heading calculated by mathematical integration. The size of the tensor is (num{\_}batches, timesteps, num{\_}features) with:
+
+\begin{itemize}
+  \item \textbf{Num{\_}batches}: a time interval where data will be collected and reported to the system. In the meantime, data will be stored in the tensor.
+  \item \textbf{Time{\_}step}: LSTM timestep
+  \item \textbf{Num{\_}features}: eatures such as acceleration, temperature, and theoretical position.
+\end{itemize}
+
+
+
+
+We are planning to have two LSTM layers with a unit of 64 (subjected to adjustment). More layers can be added if required. Dense layers will have a unit of 32 and utilize Relu activation function to introduce non-linearity. The output layer will have a unit of 3 (predictive x, y, z coordinate) with linear activation function. 
+
+Mean Square Error (MSE) is selected as the loss function as it is suitable for calculating the error between the predictive position and actual position. The error can then be utilized for position adjustment. Adam is selected as the optimizer. Note that Bahdanau Attention Mechanism might be included for more accurate prediction \citep{d2l_bahdanau_attention}.
+
+
+\section{Baseline Model}
+
+Dead reckoning is selected as our baseline model which calculates instantaneous position of the drone based on mathematical integration. Specifically, the acceleration data obtained from the IMU is integrated twice to obtain the relative position. First, acceleration is integrated to obtain velocity, and then velocity is integrated to obtain position. Angular velocity data can also be integrated to adjust for orientation changes. The acceleration values are summed up over time and multiplied by the time step to obtain changes in velocity. Similarly, changes in velocity are integrated over time to obtain changes in position. Simultaneously, angular velocity values are integrated over time to calculate changes in orientation (i.e. Euler angles or quaternions). Ultimately, the relative position calculated through integration is adjusted over time based on the changes in acceleration and angular velocity \citep{advanced_navigation_pdr}.
+
+
+\section{Ethical Considerations}
+
+\subsection{Ethical Concerns}
+The introduction of an unmanned aerial vehicle equipped with onboard localization capabilities inevitably triggers ethical considerations. Our aspiration is for our model to enable drone navigation without reliance on external aids such as light, GPS, or other navigation systems. This autonomy opens doors to various military applications, envisioning scenarios where drones can navigate complex terrains and structures in complete darkness, even in the most remote areas, to execute essential tasks \citep{britannica_uavs}. Consequently, as we delve into the development of this project, it becomes imperative to contemplate the military implications of UAVs. 
+
+
+\subsection{Possible Limitations}
+Nevertheless, this project comes with its limitations. Given that our training data will be confined to specific environments, there exists the risk of bias and inherent errors within our model, and reduces its generalizability. Additionally, the relative nature of starting points and positions introduces limitations tied to the volume of training data. As the model encounters diverse scenarios influenced by mere setup variations, the requirement for an extensive dataset becomes apparent to accommodate the array of situations encountered during testing. Furthermore, as we aim to gather our own data with the drone’s IMU, which raises concerns regarding the accuracy and quantity of data collected \citep{inertiallabs_imu}.
+
+
+
+\section{Project Plan}
+
+  \begin{longtable}{| p{.10\textwidth} | p{.16\textwidth} | p{.19\textwidth} | p{.20\textwidth} | p{.20\textwidth} |}
+    \hline
+    \textbf{Group Member} & \textbf{Responsibilities}                & \textbf{Task Description}                                                                         & \textbf{Accomplished so Far}              & \textbf{Deadlines}                                                                        \\ \hline
+    Yifan Lin             & Data collection, Data Processing         & Set up flight platform, configure sensors, conduct data collection sessions, parse and clean data & Drone and data collection platform set up & June 24th, training data collection; July 10th, testing data collection                   \\ \hline
+    Shengwen Zhao         & Basic model design, LSTM model design    & Design initial baseline model, develop and train LSTM model, hyperparameter tuning                & Architecture selection                    & July 1st, basic model set up; July 25th, testing of models accuracy                       \\ \hline
+    Xuanhao Lu            & Optimization of models/Training          & Optimize model performance, train models, integrate LSTM with drone navigation system             & Environment set up and model test run     & July 15th, basic model optimization for drone; July 31st, system optimization             \\ \hline
+    Dingsheng Liu         & Integration of model with drone movement & Implement dead reckoning model, integrate models with drone system, assist with data collection   & Drone testing                             & July 15th, system integration; July 31st, bug fix and system testing with new environment \\ \hline
+    Entire Team           & Testing and Validation                   & Conduct system integration, end-to-end testing, validate and debug the entire system              & N/A                                       & Aug 15th                                                                                  \\ \hline    
+\end{longtable} 
+
+\textbf{Collaboration Plan:}
+  \begin{itemize}
+    \item \textbf{Meetings}: twice a week via voice chat, Monday 4PM. - 6PM, Wednesday 4PM. - 6PM. with more meetings added if needed
+    \item \textbf{Communication}: WeChat Group chat and Group voice call
+    \item \textbf{Collaboration Mechanisms}: To ensure effective collaboration, all code and work will be put into a GitHub Repository, so that everyone can access and assess each person's work. Furthermore, we will use the fork function on Github to ensure members only work in their parts and enables us to compare contents to prevent conflict. In addition, a specific format is used, so that the work stays organized and documented, so that anyone can pick up someone else's work exactly where they left off efficiently if needed.
+  \end{itemize}
+
+
+
+
+
+\section{Risk Register}
+
+Our project faces several significant risks, each requiring careful consideration and mitigation strategies. Firstly, the accuracy and quantity of the data collected using our own drones pose a high-risk factor. The reliability and effectiveness of our model heavily rely on the quality and volume of this data. To mitigate this risk, we will implement stringent data collection protocols, including precise drone calibration and validation against ground truth. Additionally, strategies such as data augmentation will be explored to enhance dataset diversity and robustness.
+
+Another considerable risk is the limited availability of drones for testing. With a finite number of drones at our disposal, any complications during testing could impede data collection and subsequently delay project progress. To counteract this, meticulous planning and coordination of testing activities will be prioritized to minimize the likelihood of incidents. Furthermore, potential partnerships or collaborations with other teams could provide access to additional drones if needed.
+
+Additionally, environmental factors pose a significant risk to data accuracy. Variations in temperature, wind, humidity, and other environmental conditions can significantly impact the reliability of the data collected. \citep{advancednavigation_imu}To address this risk comprehensively, measurement devices will be integrated to monitor and account for these factors during data collection. This proactive approach will ensure that data remains consistent and reliable across different environmental conditions.
+
+Lastly, there's the risk of delays in model training. Training complex machine learning models for UAV navigation often proves time-consuming due to various factors such as computational limitations or unforeseen technical challenges. To address this risk, realistic timelines for model training will be estimated through feasibility studies, with adequate resources allocated to support efficient training. In case of delays, a proactive reassessment of our approach and potential optimization techniques will be conducted to expedite training without compromising quality.
+
+
+
+
+\section{Link to Github}
+
+\texttt{\href{https://github.com/snowstormnight/APS360_Project}{https://github.com/snowstormnight/APS360{\_}Project}}
+
+
+
+
+
+
+\label{last_page}
+
+
+\bibliography{APS360_ref}
+\bibliographystyle{iclr2022_conference}
+
+\end{document}
